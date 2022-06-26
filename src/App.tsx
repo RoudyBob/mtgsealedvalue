@@ -81,8 +81,7 @@ class App extends React.Component<AppProps, AppState> {
         method: 'GET',
         headers: new Headers ({
             'Content-Type': 'application/json',
-            'Authorization': `Bearer l-e6F0cDctm89u__QgCM2IOVmYeccDqCXT4galN3VDAZu4QZ8SBehDEycZvjhNnDwLCTZdveL8n_Y1RuFY3rnpMHDPPCKQ2Y0mVkCc9_5iBi4herQePWiDF7gVbJXbmPxk8sLRByOnroZN0LfrPSaoqHOq6uf4UOzs1RZFF4hii0Db53CmCEi5cOxDDbPy5VDHmhTy3WbXnDKWq5-xDFp2Vrthwxsr_-tIu2RzXeXKb-9U0n9V9MRBrs0rehFeAjkZdSsyWwzFKtp-lQJPg4X2ZxK66Q2BAYju-BUEkJQfVGXYuG6EUp5iTaIOGtSzlnpryIKA`
-        })
+            'Authorization': `Bearer `        })
     })
     .then((response) => response.json())
     .then((productData) => {
@@ -125,8 +124,7 @@ class App extends React.Component<AppProps, AppState> {
           method: 'GET',
           headers: new Headers ({
               'Content-Type': 'application/json',
-              'Authorization': `Bearer l-e6F0cDctm89u__QgCM2IOVmYeccDqCXT4galN3VDAZu4QZ8SBehDEycZvjhNnDwLCTZdveL8n_Y1RuFY3rnpMHDPPCKQ2Y0mVkCc9_5iBi4herQePWiDF7gVbJXbmPxk8sLRByOnroZN0LfrPSaoqHOq6uf4UOzs1RZFF4hii0Db53CmCEi5cOxDDbPy5VDHmhTy3WbXnDKWq5-xDFp2Vrthwxsr_-tIu2RzXeXKb-9U0n9V9MRBrs0rehFeAjkZdSsyWwzFKtp-lQJPg4X2ZxK66Q2BAYju-BUEkJQfVGXYuG6EUp5iTaIOGtSzlnpryIKA`
-          })
+              'Authorization': `Bearer `          })
       })
       .then((response) => response.json())
       .then((productData) => {
