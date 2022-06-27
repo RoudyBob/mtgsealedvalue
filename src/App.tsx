@@ -1,6 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import Table from 'react-bootstrap/Table'
 import ItemDisplay from './ItemDisplay';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 export interface tokenObject {
@@ -8,20 +9,15 @@ export interface tokenObject {
   expires: string
 }
 
-export interface itemObject {
-  sku: string,
-  name: string,
-  price: number,
-  imgUrl: string
-}
 export interface AppProps {
 
 } 
 
 export interface AppState {
-  bearerToken: tokenObject,
-  itemInfo: itemObject
+  bearerToken: tokenObject
 }
+
+const productIdArray: Array<string> = ['271509','257563','236348','264767','267023','221319','271506','228245','267019','264760','257557','230384','255911','246467','244379','185894','238730','236354','221319','233249','228245','220414','214811','208273','202298','194891','188210','185676','180734','173362','166550','158423','149404','141989'];
 
 class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -30,19 +26,16 @@ class App extends React.Component<AppProps, AppState> {
       bearerToken: {
         access_token: '',
         expires: ''
-      },
-      itemInfo: {
-        sku: '',
-        name: '',
-        price: 0,
-        imgUrl: ''
       }
     }
   };
 
   authGetter = async () => {
-    let url: string = 'https://api.tcgplayer.com/token'
+    // TODO: Fix the CORS issue without needing the proxy here.
+    let url: string = 'https://cors-anywhere.herokuapp.com/https://api.tcgplayer.com/token'
     try {
+      console.log(process.env.REACT_APP_TCG_PUBLICID);
+      console.log(process.env.REACT_APP_TCG_PRIVATEID);
       let response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -51,6 +44,7 @@ class App extends React.Component<AppProps, AppState> {
         body: 'grant_type=client_credentials&client_id=' + process.env.REACT_APP_TCG_PUBLICID + '&client_secret=' + process.env.REACT_APP_TCG_PRIVATEID,
       });
       let tokenData = await response.json();
+      console.log(tokenData);
       return tokenData;
     } catch (error) {
       console.log(error);
@@ -74,70 +68,6 @@ class App extends React.Component<AppProps, AppState> {
       console.log('Error Acquiring Bearer Token')
       console.log(error);
     }
-  };
-
-  getSkuByProductId = (productId: string) => {
-    fetch(`https://api.tcgplayer.com/v1.39.0/catalog/products/` + productId + '/skus', {
-        method: 'GET',
-        headers: new Headers ({
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer `        })
-    })
-    .then((response) => response.json())
-    .then((productData) => {
-        console.log(productData.results[0]);
-        this.setState({
-          itemInfo: {
-            price: this.state.itemInfo.price,
-            name: this.state.itemInfo.name,
-            sku: productData.results[0].skuId,
-            imgUrl: this.state.itemInfo.imgUrl
-          }
-        });
-    })
-  };
-
-  getPriceBySku = (sku: string) => {
-    fetch(`https://api.tcgplayer.com/v1.39.0/pricing/marketprices/` + sku, {
-        method: 'GET',
-        headers: new Headers ({
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer `
-        })
-    })
-    .then((response) => response.json())
-    .then((priceData) => {
-        console.log(priceData.results[0]);
-        this.setState({
-          itemInfo: {
-            price: priceData.results[0].price,
-            name: this.state.itemInfo.name,
-            sku: this.state.itemInfo.sku,
-            imgUrl: this.state.itemInfo.imgUrl
-          }
-        });
-    })
-  };
-
-  getProductInfoByProductId = (productId: string) => {
-      fetch(`https://api.tcgplayer.com/v1.39.0/catalog/products/` + productId, {
-          method: 'GET',
-          headers: new Headers ({
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer `          })
-      })
-      .then((response) => response.json())
-      .then((productData) => {
-          console.log(productData.results[0]);
-          this.setState({
-            itemInfo: {
-              price: this.state.itemInfo.price,
-              name: productData.results[0].name,
-              sku: this.state.itemInfo.sku,
-              imgUrl: productData.results[0].imageUrl
-            }
-          });
-      })
   };
 
   monthConverter = (monthName: string) => {
@@ -169,12 +99,6 @@ class App extends React.Component<AppProps, AppState> {
       }
   }
 
-  componentDidUpdate(prevProps:AppProps, prevState:AppState) {
-    if (prevState.itemInfo.sku !== this.state.itemInfo.sku) {
-      this.getPriceBySku(this.state.itemInfo.sku);
-    }
-  };
-
   componentDidMount() {
     // Check to see if Bearer Token exists. If not, authenticate to TCGPlayer.
     if (!localStorage.getItem('tcgToken')) {
@@ -182,7 +106,7 @@ class App extends React.Component<AppProps, AppState> {
       this.authenticate();
     // If Bearer Token exists, check the expiration. If it's expired, authenticate to TCGPlayer.
     } else {
-      console.log(localStorage.getItem('tcgTokenExpiry'));
+      // console.log(localStorage.getItem('tcgTokenExpiry'));
       const expiration = localStorage.getItem('tcgTokenExpiry');
       if (expiration) {
         let expirationDate = new Date(expiration.slice(12,16) + '-' + this.monthConverter(expiration.slice(8,11)) + '-' + expiration.slice(5,7) + 'T' + expiration.slice(17,25) + 'Z').toUTCString();
@@ -199,21 +123,25 @@ class App extends React.Component<AppProps, AppState> {
         }
       }
     }
-
-    this.getProductInfoByProductId('271509');
-    this.getSkuByProductId('271509');
-  }
+  };
 
   render() {
     return (
       <div className="main">
-        <h1>TCGPlayer API Testing</h1>
-        <ItemDisplay />
-        <p></p>
-        <h3>{this.state.itemInfo.name}</h3>
-        <img src={this.state.itemInfo.imgUrl} alt='Modern Horizons 2 Draft Booster Box'></img>
-        <p>The SKU is: {this.state.itemInfo.sku}</p>
-        <p>The market price is: {this.state.itemInfo.price}</p>
+        <h1>TCGPlayer API Testing - App.tsx</h1>
+        <Table bordered hover size="sm">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product ID</th>
+              <th>Product Name</th>
+              <th>Market Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productIdArray.map((id, index) => {return <ItemDisplay productId={id} keyId={index}/>})}
+          </tbody>
+        </Table>
       </div>
     );
   }
