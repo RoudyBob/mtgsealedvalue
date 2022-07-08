@@ -1,34 +1,68 @@
 import React from 'react';
-import Table from 'react-bootstrap/Table'
-import ItemDisplay from './ItemDisplay';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+import Auth from "./Auth/Auth";
+import Logout from "./Auth/Logout";
+import Header from "./Components/Header";
+import Main from "./Components/Main";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-
-export interface tokenObject {
-  access_token: string,
-  expires: string
-}
 
 export interface AppProps {
 
 } 
 
 export interface AppState {
+  sessionToken: string | null,
+  userid: string,
+  newToken: string,
+  showLogin: boolean,
   bearerToken: tokenObject
-}
+} 
 
-const productIdArray: Array<string> = ['271509','257563','236348','264767','267023','221319','271506','228245','267019','264760','257557','230384','255911','246467','244379','185894','238730','236354','221319','233249','228245','220414','214811','208273','202298','194891','188210','185676','180734','173362','166550','158423','149404','141989'];
+export interface tokenObject {
+  access_token: string,
+  expires: string
+}
 
 class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
+      sessionToken: '',
+      userid: '',
+      newToken: '',
+      showLogin: true,
       bearerToken: {
         access_token: '',
         expires: ''
       }
     }
   };
+
+  async getInventoryInfo () {
+    const inventoryResponse = await fetch('')
+  }
+
+  homeView = () => {
+    return (this.state.sessionToken ? <Main token={this.state.sessionToken} userid={this.state.userid} /> : <Auth updateToken={this.updateToken} showLogin={true} />);
+  };
+
+  mainView = () => {
+    return (this.state.sessionToken ? <Main token={this.state.sessionToken} userid={this.state.userid} /> : <Navigate to="/" replace />);
+  };
+
+  updateToken = (newToken: string, newUserid: string, newUnits: string) => {
+    localStorage.setItem('token', newToken);
+    this.setState({ sessionToken: newToken});
+    localStorage.setItem('userid', newUserid);
+    this.setState({ userid: newUserid });
+  }
+
+  clearToken = () => {
+    localStorage.clear();
+    this.setState({ sessionToken: '' });
+  }
 
   authGetter = async () => {
     // TODO: Fix the CORS issue without needing the proxy here.
@@ -55,15 +89,16 @@ class App extends React.Component<AppProps, AppState> {
     try {
       let tokenData = await this.authGetter();
       console.log(tokenData);
+      localStorage.setItem('tcgToken', tokenData.access_token)
+      localStorage.setItem('tcgTokenExpiry', tokenData['.expires'])
       this.setState({ 
         bearerToken: {
           access_token: tokenData.access_token,
           expires: tokenData['.expires']
         }
       });
+      // TODO: For some reason, this is not setting the state properly
       console.log(this.state.bearerToken);
-      localStorage.setItem('tcgToken', this.state.bearerToken.access_token)
-      localStorage.setItem('tcgTokenExpiry', this.state.bearerToken.expires)
     } catch (error) {
       console.log('Error Acquiring Bearer Token')
       console.log(error);
@@ -119,6 +154,7 @@ class App extends React.Component<AppProps, AppState> {
         } else {
           // Bearer Token Expired
           console.log('token expired - logging in');
+          // TODO: Make this a synchronous function as the rest of the application needs to wait until the bearer token exists.
           this.authenticate();
         }
       }
@@ -127,21 +163,15 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <div className="main">
-        <h1>TCGPlayer API Testing - App.tsx</h1>
-        <Table bordered hover size="sm">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Product ID</th>
-              <th>Product Name</th>
-              <th>Market Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productIdArray.map((id, index) => {return <ItemDisplay productId={id} keyId={index}/>})}
-          </tbody>
-        </Table>
+      <div className="app">
+        <Header token={this.state.sessionToken} />
+        <Routes>
+          <Route path="/" element={this.homeView()} />
+          <Route path="/main" element={this.mainView()} />
+          <Route path="/login"><Auth updateToken={this.updateToken} showLogin={true} /></Route>
+          <Route path="/signup"><Auth updateToken={this.updateToken} showLogin={false} /></Route>
+          <Route path="/logout"><Logout clearToken={this.clearToken} /></Route>
+        </Routes>
       </div>
     );
   }

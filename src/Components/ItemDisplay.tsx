@@ -1,10 +1,9 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import '../App.css';
 
 export interface itemObject {
-    sku: string,
     name: string,
     price: number,
     imgUrl: string
@@ -17,14 +16,13 @@ export interface ItemDisplayProps {
 
 export interface ItemDisplayState {
     itemInfo: itemObject
-}
+};
 
 class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
     constructor(props: ItemDisplayProps) {
         super(props);
         this.state = {
           itemInfo: {
-            sku: '',
             name: '',
             price: 0,
             imgUrl: ''
@@ -72,7 +70,7 @@ class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
     //         }
     //     });
     // };
-    
+
     async getProductInfoByProductId (productId: string) {
         const bearerToken: string | null = localStorage.getItem('tcgToken')
         const productResponse = await fetch(`https://api.tcgplayer.com/v1.39.0/catalog/products/` + productId, {
@@ -88,7 +86,6 @@ class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
             itemInfo: {
                 price: this.state.itemInfo.price,
                 name: productData.results[0].name,
-                sku: this.state.itemInfo.sku,
                 imgUrl: productData.results[0].imageUrl
             }
         });
@@ -109,7 +106,6 @@ class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
                     itemInfo: {
                         price: priceInfo.marketPrice.toFixed(2),
                         name: this.state.itemInfo.name,
-                        sku: this.state.itemInfo.sku,
                         imgUrl: this.state.itemInfo.imgUrl
                     }
                 });
