@@ -1,17 +1,16 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
 
 export interface LoginProps {
-    updateToken: Function,
-}
+    updateToken: Function
+};
  
 export interface LoginState {
     email: string,
     password: string,
     alertVisible: boolean
-}
- 
+};
+
 class Login extends React.Component<LoginProps, LoginState> {
     constructor(props: LoginProps) {
         super(props);
@@ -23,9 +22,9 @@ class Login extends React.Component<LoginProps, LoginState> {
     }
 
     handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
-        let navigate = useNavigate();
-
         e.preventDefault();
+
+        console.log('In handleSubmit')
         fetch(`http://localhost:3001/user/login`, {
             method: 'POST',
             body: JSON.stringify({user: {email: this.state.email, password: this.state.password}}),
@@ -38,8 +37,8 @@ class Login extends React.Component<LoginProps, LoginState> {
             if (data.hasOwnProperty("error")) {
                 this.setState({ alertVisible: true })
             } else {
+                console.log(data);
                 this.props.updateToken(data.sessionToken, data.user.id);
-                navigate('./main');
             }
         })  
     }
@@ -54,7 +53,7 @@ class Login extends React.Component<LoginProps, LoginState> {
         return ( 
             <div className="auth-inner">
                 <div className="failedLogin">
-                    <Alert color="danger" show={this.state.alertVisible} onClose={this.toggleAlert}>
+                    <Alert color="danger" dismissible show={this.state.alertVisible} onClose={this.toggleAlert}>
                         Login Failed - Try Again.
                     </Alert>
                 </div>

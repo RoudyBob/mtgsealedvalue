@@ -1,38 +1,78 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
 import ItemDisplay from './ItemDisplay';
+import AddItem from './AddItem';
+
 
 interface MainProps {
-    token: string,
-    userid: string
+    token: string | null,
+    userid: string | null
 }
  
 interface MainState {
-    
+  items: InventoryItems,
+  addModalOn: boolean
 }
  
 export interface InventoryItem {
-    inventoryId: number,
-    productId: number,
-    productName: string,
-    datePurchased: Date,
-    purchasePrice: number,
-    purchaseTax: number,
-    purchaseShipping: number,
+    id: number,
+    productid: number,
+    productname: string,
+    datepurchased: Date | null,
+    purchaseprice: number,
+    purchasetax: number,
+    purchaseshipping: number,
     notes: string
 };
 
 interface InventoryItems extends Array<InventoryItem> {};
 
-const productIdArray: Array<string> = ['275412','275403','271509','257563','236348','267023','221319','271506','267019','264767','264763','264760','257557','230384','255911','246457','246467','244384','244379','185894','238745','238730','236354','221323','221319','233232','233249','228249','228245','220414','214818','214811','208279','208273','202302','202298','194907','194891','188210','185676','180734','173362','166550','158423','149404','141989'];
-
 class Main extends React.Component<MainProps, MainState> {
     constructor(props: MainProps) {
         super(props);
-        this.state = {};
+        this.state = {
+          items: [{
+            id: 0,
+            productid: 0,
+            productname: '',
+            datepurchased: null,
+            purchaseprice: 0,
+            purchasetax: 0,
+            purchaseshipping: 0,
+            notes: ''
+          }],
+          addModalOn: false
+        };
     }
+
+    async getInventoryInfo () {
+      if(this.props.token) {
+        const inventoryResponse = await fetch(`http://localhost:3001/product/mine`, {
+          method: 'GET',
+          headers: new Headers ({
+              'Content-Type': 'application/json',
+              'Authorization': this.props.token
+          })
+        });
+        const inventoryData = await inventoryResponse.json();
+        this.setState({ items: inventoryData });
+        // console.log(this.state.items[0])
+      };
+    }
+
+    toggleAddModal = () => {
+      this.setState(prevState => ({
+        addModalOn: !prevState.addModalOn
+      }));
+    }
+    componentDidMount () {
+      this.getInventoryInfo();
+    }
+
     render() { 
         return (
+          <div className="main">
             <Table className="displayTable" responsive="sm" bordered hover size="sm">
             <thead>
               <tr>
@@ -44,9 +84,12 @@ class Main extends React.Component<MainProps, MainState> {
               </tr>
             </thead>
             <tbody>
-              {productIdArray.map((id, index) => {return <ItemDisplay productId={id} keyId={index}/>})}
+              {this.state.items[0].productid !== 0 ? this.state.items.map((item, index) => {return <ItemDisplay inventoryId={item.id} productId={item.productid.toString()} keyId={index}/>}) : null }
             </tbody>
           </Table>
+          <AddItem addModalOn={this.state.addModalOn} toggleAddModal={this.toggleAddModal} />
+          <Button onClick={() => this.toggleAddModal()}>Add Item</Button>
+          </div>
         );
     }
 }

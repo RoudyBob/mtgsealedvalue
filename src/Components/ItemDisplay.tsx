@@ -2,6 +2,8 @@ import React from 'react';
 import Button from 'react-bootstrap/Button'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
+import EditItem from './EditItem';
+
 
 export interface itemObject {
     name: string,
@@ -11,11 +13,13 @@ export interface itemObject {
 
 export interface ItemDisplayProps {
     productId: string,
+    inventoryId: number,
     keyId: number
 }
 
 export interface ItemDisplayState {
-    itemInfo: itemObject
+    itemInfo: itemObject,
+    editModalOn: boolean
 };
 
 class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
@@ -26,7 +30,8 @@ class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
             name: '',
             price: 0,
             imgUrl: ''
-          }
+          },
+          editModalOn: false
         }
       };
 
@@ -115,28 +120,29 @@ class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
 
     };
 
-    componentDidUpdate(prevProps:ItemDisplayProps, prevState:ItemDisplayState) {
-        // if (prevState.itemInfo.sku !== this.state.itemInfo.sku) {
-        //   this.getPriceBySku(this.state.itemInfo.sku);
-        // }
-    };
-
     componentDidMount() {
         this.getProductInfoByProductId(this.props.productId);
-        // this.getSkuByProductId(this.props.productId);
+    }
+
+    toggleEditModal = () => {
+        this.setState(prevState => ({
+          editModalOn: !prevState.editModalOn
+        }));
     }
 
     render() {
         return (
-            <tr key={this.props.keyId.toString()}>
-                <td align="center"><img src={this.state.itemInfo.imgUrl} width='75' alt='Product Box Shot'></img></td>
-                <td>{this.props.productId}</td>
-                <td>{this.state.itemInfo.name}</td>
-                <td>${this.state.itemInfo.price}</td>
-                <td><Button>Edit</Button></td>
-            </tr>
-        )
-    }
+                <tr key={this.props.keyId.toString()}>
+                    <td align="center"><img src={this.state.itemInfo.imgUrl} width='75' alt='Product Box Shot'></img></td>
+                    <td>{this.props.productId}</td>
+                    <td>{this.state.itemInfo.name}</td>
+                    <td>${this.state.itemInfo.price}</td>
+                    <td>
+                        <EditItem inventoryId={this.props.inventoryId} editModalOn={this.state.editModalOn} toggleEditModal={this.toggleEditModal} />
+                        <Button onClick={() => this.toggleEditModal()}>Edit</Button>
+                    </td>
+                </tr>
+    )}
 }
 
 export default ItemDisplay;

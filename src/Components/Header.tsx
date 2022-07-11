@@ -17,7 +17,19 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     render() { 
         return ( 
             <div className="header">
-                <h1>TCG Player Sealed Magic: The Gathering Market Prices</h1>
+                <h3>Magic the Gathering: Sealed Value</h3>
+                <nav className="navbar navbar-expand-lg navbar-light fixed-top">
+                        <div className="collapse navbar-collapse" id="main-navbar">
+                            <ul className="navbar-nav ml-auto">
+                                <li className="nav-item">
+                                    <Link className="nav-link" to={"/"}>Home</Link>
+                                </li>
+                                <li className="nav-item">
+                                    {this.props.token ? <Link className="nav-link" to={"/logout"}>Logout</Link> : <Link className="nav-link" to={"/login"}>Login</Link>}
+                                </li>
+                            </ul>
+                        </div>
+                </nav>
             </div>
         );
     }

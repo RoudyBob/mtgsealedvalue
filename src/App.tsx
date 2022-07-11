@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Auth from "./Auth/Auth";
 import Logout from "./Auth/Logout";
@@ -44,23 +44,23 @@ class App extends React.Component<AppProps, AppState> {
     const inventoryResponse = await fetch('')
   }
 
-  homeView = () => {
+  mainView = () => {
     return (this.state.sessionToken ? <Main token={this.state.sessionToken} userid={this.state.userid} /> : <Auth updateToken={this.updateToken} showLogin={true} />);
   };
 
-  mainView = () => {
-    return (this.state.sessionToken ? <Main token={this.state.sessionToken} userid={this.state.userid} /> : <Navigate to="/" replace />);
-  };
-
   updateToken = (newToken: string, newUserid: string, newUnits: string) => {
+    console.log('in update token');
+    console.log(newToken);
     localStorage.setItem('token', newToken);
     this.setState({ sessionToken: newToken});
     localStorage.setItem('userid', newUserid);
     this.setState({ userid: newUserid });
+    console.log(this.state.sessionToken)
   }
 
   clearToken = () => {
-    localStorage.clear();
+    localStorage.removeItem('userid');
+    localStorage.removeItem('token');
     this.setState({ sessionToken: '' });
   }
 
@@ -135,6 +135,12 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   componentDidMount() {
+    // Check to see if Auth Token exists. 
+    if (localStorage.getItem('token')) {
+      this.setState({
+        sessionToken: localStorage.getItem('token')
+      })
+    }
     // Check to see if Bearer Token exists. If not, authenticate to TCGPlayer.
     if (!localStorage.getItem('tcgToken')) {
       console.log("no token - logging in")
@@ -163,15 +169,16 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <div className="app">
+      <div className="App">
         <Header token={this.state.sessionToken} />
         <Routes>
-          <Route path="/" element={this.homeView()} />
-          <Route path="/main" element={this.mainView()} />
-          <Route path="/login"><Auth updateToken={this.updateToken} showLogin={true} /></Route>
-          <Route path="/signup"><Auth updateToken={this.updateToken} showLogin={false} /></Route>
-          <Route path="/logout"><Logout clearToken={this.clearToken} /></Route>
+          {/* <Route path="/" element={<Main token={this.state.sessionToken} userid={this.state.userid}/>}></Route> */}
+          <Route path="/" element={this.mainView()}></Route>
+          <Route path="/login" element={<Auth updateToken={this.updateToken} showLogin={true} />}></Route>
+          <Route path="/signup" element={<Auth updateToken={this.updateToken} showLogin={false} />}></Route>
+          <Route path="/logout" element={<Logout clearToken={this.clearToken} />}></Route>
         </Routes>
+
       </div>
     );
   }

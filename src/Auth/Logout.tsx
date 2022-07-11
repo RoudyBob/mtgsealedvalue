@@ -15,14 +15,8 @@ class Logout extends React.Component<LogoutProps, LogoutState> {
     //     this.state = { :  };
     // }
 
-    redirectHome = () => {
-        let navigate = useNavigate();
-        navigate('/');
-    };
-
     componentDidMount () {
         this.props.clearToken();
-        this.redirectHome();
     }
     
     render() { 

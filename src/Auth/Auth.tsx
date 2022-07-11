@@ -11,14 +11,14 @@ export interface AuthProps {
 export interface AuthState {
 
 }
- 
+
+
 class Auth extends React.Component<AuthProps, AuthState> {
-    // constructor(props: AuthProps) {
-    //     super(props);
-    //     this.state = {
-    //         showLogin: true
-    //     };
-    // }
+    constructor(props: AuthProps) {
+        super(props);
+        this.state = {
+        };
+    }
 
     render() { 
 

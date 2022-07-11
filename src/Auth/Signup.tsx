@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from "react-router-dom";
 import { Form, FormLabel } from 'react-bootstrap';
 
 export interface SignupProps {
@@ -11,10 +10,7 @@ export interface SignupState {
     lastName: string,
     email: string,
     password: string,
-    birthdate: string,
-    startOfWeek: string,
-    defaultUnit: string,
-    coach: boolean
+    currency: string
 }
  
 class Signup extends React.Component<SignupProps, SignupState> {
@@ -25,16 +21,11 @@ class Signup extends React.Component<SignupProps, SignupState> {
             lastName: '',
             email: '',
             password: '',
-            birthdate: '',
-            startOfWeek: 'monday',
-            defaultUnit: 'mi',
-            coach: false
+            currency: ''
         };
     }
 
     handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
-        let navigate = useNavigate();
-
         e.preventDefault();
         fetch(`http://localhost:3001/user/signup`, {
             method: 'POST',
@@ -42,11 +33,9 @@ class Signup extends React.Component<SignupProps, SignupState> {
                 user: {
                     firstname: this.state.firstName,
                     lastname: this.state.lastName,
-                    email: this.state.email, 
-                    password: this.state.password,
-                    weekstart: this.state.startOfWeek,
-                    defaultunits: this.state.defaultUnit,
-                    coach: this.state.coach
+                    email: this.state.email,
+                    currency: this.state.currency,
+                    password: this.state.password
                 }
             }),
             headers: new Headers({
@@ -56,7 +45,6 @@ class Signup extends React.Component<SignupProps, SignupState> {
         .then((response) => response.json())
         .then((data) => {
             this.props.updateToken(data.sessionToken, data.user.id);
-            navigate('./main');
         })
     }
 
@@ -81,10 +69,13 @@ class Signup extends React.Component<SignupProps, SignupState> {
                             <label>Email address</label>
                             <input type="email" className="form-control" placeholder="Enter email" onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({ email: e.currentTarget.value })} required />
                         </div>
-
                         <div className="form-group">
                             <label>Password</label>
                             <input type="password" className="form-control" placeholder="Enter password" onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({ password: e.currentTarget.value })} required />
+                        </div>
+                        <div className="form-group">
+                            <label>Currency</label>
+                            <input type="password" className="form-control" placeholder="(e.g. USD)" onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({ currency: e.currentTarget.value })} required />
                         </div>
                         <button type="submit" className="btn btn-primary btn-block">Sign Up</button>
                         <p className="signup-login text-right">
