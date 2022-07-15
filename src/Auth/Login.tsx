@@ -38,7 +38,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                 this.setState({ alertVisible: true })
             } else {
                 console.log(data);
-                this.props.updateToken(data.sessionToken, data.user.id);
+                this.props.updateToken(data.sessionToken, data.user.id, data.user.firstname, data.user.lastname);
             }
         })  
     }

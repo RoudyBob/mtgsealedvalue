@@ -1,35 +1,47 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Navbar } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import AddItem from './AddItem';
 
 interface HeaderProps {
-    token: string | null    
+    token: string | null,
+    toggleAddModal: Function
 }
  
 interface HeaderState {
-    
+    addModalOn: boolean
 }
- 
+
 class Header extends React.Component<HeaderProps, HeaderState> {
     constructor(props: HeaderProps) {
         super(props);
-        this.state = {};
+        this.state = {
+            addModalOn: false
+        };
     }
+
+    toggleAddModal = () => {
+        this.setState(prevState => ({
+            addModalOn: !prevState.addModalOn
+        }));
+    }
+
     render() { 
         return ( 
             <div className="header">
-                <h3>Magic the Gathering: Sealed Value</h3>
-                <nav className="navbar navbar-expand-lg navbar-light fixed-top">
-                        <div className="collapse navbar-collapse" id="main-navbar">
-                            <ul className="navbar-nav ml-auto">
-                                <li className="nav-item">
-                                    <Link className="nav-link" to={"/"}>Home</Link>
-                                </li>
-                                <li className="nav-item">
-                                    {this.props.token ? <Link className="nav-link" to={"/logout"}>Logout</Link> : <Link className="nav-link" to={"/login"}>Login</Link>}
-                                </li>
-                            </ul>
-                        </div>
-                </nav>
+                <Navbar bg="primary" variant="dark" fixed="top">
+                    <Container>
+                        <Navbar.Brand>Magic the Gathering: Sealed Value</Navbar.Brand>
+                        <Nav className="me-auto">
+                            <Nav.Link href="/">Home</Nav.Link>
+                            {this.props.token ? <Nav.Link href="/logout">Logout</Nav.Link> : <Nav.Link href="/login">Login</Nav.Link>}
+                        </Nav>
+                        <Button className="addItemButton" variant="secondary" onClick={() => this.toggleAddModal()}>Add Item to Inventory</Button>
+                    </Container>
+                </Navbar>
+                <AddItem addModalOn={this.state.addModalOn} toggleAddModal={this.toggleAddModal} token={this.props.token} />
             </div>
         );
     }

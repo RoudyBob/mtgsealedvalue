@@ -15,9 +15,11 @@ export interface AppProps {
 export interface AppState {
   sessionToken: string | null,
   userid: string,
+  fullname: string,
   newToken: string,
   showLogin: boolean,
-  bearerToken: tokenObject
+  bearerToken: tokenObject,
+  addModalOn: boolean,
 } 
 
 export interface tokenObject {
@@ -31,30 +33,30 @@ class App extends React.Component<AppProps, AppState> {
     this.state = {
       sessionToken: '',
       userid: '',
+      fullname: '',
       newToken: '',
       showLogin: true,
       bearerToken: {
         access_token: '',
         expires: ''
-      }
+      },
+      addModalOn: false
     }
   };
-
-  async getInventoryInfo () {
-    const inventoryResponse = await fetch('')
-  }
 
   mainView = () => {
     return (this.state.sessionToken ? <Main token={this.state.sessionToken} userid={this.state.userid} /> : <Auth updateToken={this.updateToken} showLogin={true} />);
   };
 
-  updateToken = (newToken: string, newUserid: string, newUnits: string) => {
+  updateToken = (newToken: string, newUserid: string, firstname: string, lastname: string) => {
+    let fname: string = firstname + ' ' + lastname;
+    console.log(fname);
     console.log('in update token');
     console.log(newToken);
     localStorage.setItem('token', newToken);
     this.setState({ sessionToken: newToken});
     localStorage.setItem('userid', newUserid);
-    this.setState({ userid: newUserid });
+    this.setState({ userid: newUserid, fullname: fname });
     console.log(this.state.sessionToken)
   }
 
@@ -134,6 +136,12 @@ class App extends React.Component<AppProps, AppState> {
       }
   }
 
+  toggleAddModal = () => {
+    this.setState(prevState => ({
+      addModalOn: !prevState.addModalOn
+    }));
+  }
+
   componentDidMount() {
     // Check to see if Auth Token exists. 
     if (localStorage.getItem('token')) {
@@ -154,7 +162,7 @@ class App extends React.Component<AppProps, AppState> {
         console.log('Expiration Date: ' + expirationDate);
         let currentDate = new Date().toUTCString();
         console.log('Current Date: ' + currentDate);
-        if (currentDate > expirationDate) {
+        if (currentDate < expirationDate) {
           // Bearer Token Not Yet Expired
           console.log('token not yet expired  - no need to log in');
         } else {
@@ -170,7 +178,7 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <div className="App">
-        <Header token={this.state.sessionToken} />
+        <Header token={this.state.sessionToken} toggleAddModal={this.toggleAddModal} />
         <Routes>
           {/* <Route path="/" element={<Main token={this.state.sessionToken} userid={this.state.userid}/>}></Route> */}
           <Route path="/" element={this.mainView()}></Route>

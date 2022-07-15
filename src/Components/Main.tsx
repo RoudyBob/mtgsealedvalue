@@ -1,8 +1,7 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
 import ItemDisplay from './ItemDisplay';
-import AddItem from './AddItem';
+
 
 
 interface MainProps {
@@ -11,8 +10,7 @@ interface MainProps {
 }
  
 interface MainState {
-  items: InventoryItems,
-  addModalOn: boolean
+  items: InventoryItems
 }
  
 export interface InventoryItem {
@@ -41,8 +39,7 @@ class Main extends React.Component<MainProps, MainState> {
             purchasetax: 0,
             purchaseshipping: 0,
             notes: ''
-          }],
-          addModalOn: false
+          }]
         };
     }
 
@@ -61,11 +58,7 @@ class Main extends React.Component<MainProps, MainState> {
       };
     }
 
-    toggleAddModal = () => {
-      this.setState(prevState => ({
-        addModalOn: !prevState.addModalOn
-      }));
-    }
+
     componentDidMount () {
       this.getInventoryInfo();
     }
@@ -79,16 +72,17 @@ class Main extends React.Component<MainProps, MainState> {
                 <th>Image</th>
                 <th>Product ID</th>
                 <th>Product Name</th>
+                <th>Date Purchased</th>
                 <th>Market Price</th>
+                <th>Cost Basis</th>
+                <th>Profit/Loss</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.items[0].productid !== 0 ? this.state.items.map((item, index) => {return <ItemDisplay inventoryId={item.id} productId={item.productid.toString()} keyId={index}/>}) : null }
+              {this.state.items[0].productid !== 0 ? this.state.items.map((item, index) => {return <ItemDisplay item={item} keyId={index}/>}) : null }
             </tbody>
           </Table>
-          <AddItem addModalOn={this.state.addModalOn} toggleAddModal={this.toggleAddModal} />
-          <Button onClick={() => this.toggleAddModal()}>Add Item</Button>
           </div>
         );
     }

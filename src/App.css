@@ -38,9 +38,37 @@
 }
 
 .main {
-  margin-top: 0px
+ padding-top: 75px;
+}
+
+.header {
+
 }
 
 .header h3 {
   padding-top: 10px;
+}
+
+.listButtons {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.negativeNumber {
+  color: red;
+}
+
+.positiveNumber {
+  color: green;
+}
+
+.neutralNumber {
+  color: darkgray;
+}
+
+.header .container {
+  margin-left: 25px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-right: 0px;
 }

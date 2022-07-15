@@ -44,7 +44,7 @@ class Signup extends React.Component<SignupProps, SignupState> {
         })
         .then((response) => response.json())
         .then((data) => {
-            this.props.updateToken(data.sessionToken, data.user.id);
+            this.props.updateToken(data.sessionToken, data.user.id, data.user.firstname, data.user.lastname);
         })
     }
 
