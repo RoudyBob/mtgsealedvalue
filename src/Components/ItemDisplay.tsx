@@ -13,7 +13,9 @@ export interface itemObject {
 
 export interface ItemDisplayProps {
     item: InventoryItem,
-    keyId: number
+    keyId: number,
+    addToCost: Function,
+    addToValue: Function,
 }
 
 export interface ItemDisplayState {
@@ -106,6 +108,10 @@ class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
         priceData.results.forEach ((priceInfo: any) => {
             if (priceInfo.subTypeName === "Normal") {
                 // console.log(priceInfo);
+                this.props.addToValue(this.props.item.id, Number(this.state.itemInfo.price))
+                let costBasis = parseFloat(this.props.item.purchaseprice.toString()) + parseFloat(this.props.item.purchasetax.toString()) + parseFloat(this.props.item.purchaseshipping.toString())
+                this.props.addToCost(costBasis.toFixed(2));
+                // console.log(this.props.item.id, Number(priceInfo.marketPrice.toFixed(2)))
                 this.setState({
                     itemInfo: {
                         price: priceInfo.marketPrice.toFixed(2),
@@ -121,6 +127,12 @@ class ItemDisplay extends React.Component<ItemDisplayProps, ItemDisplayState> {
 
     componentDidMount() {
         this.getProductInfoByProductId(this.props.item.productid.toString());
+    }
+
+    componentDidUpdate(PrevProps: ItemDisplayProps, prevState: ItemDisplayState) {
+        if (prevState.itemInfo.price !== this.state.itemInfo.price) {
+            // console.log(`${this.state.itemInfo.name} changed to ${this.state.itemInfo.price}`)
+        }
     }
 
     toggleEditModal = () => {

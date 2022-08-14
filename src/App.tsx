@@ -20,6 +20,8 @@ export interface AppState {
   showLogin: boolean,
   bearerToken: tokenObject,
   addModalOn: boolean,
+  totalCost: number,
+  totalValue: number
 } 
 
 export interface tokenObject {
@@ -40,8 +42,10 @@ class App extends React.Component<AppProps, AppState> {
         access_token: '',
         expires: ''
       },
-      addModalOn: false
-    }
+      addModalOn: false,
+      totalCost: 0,
+      totalValue: 0
+    };
   };
 
   mainView = () => {
@@ -136,6 +140,14 @@ class App extends React.Component<AppProps, AppState> {
       }
   }
 
+  updateCost (total: number) {
+    this.setState({ totalCost: total })
+  };
+
+  updateValue (total: number) {
+    this.setState({totalValue: total });
+  }
+
   toggleAddModal = () => {
     this.setState(prevState => ({
       addModalOn: !prevState.addModalOn
@@ -178,7 +190,7 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <div className="App">
-        <Header token={this.state.sessionToken} toggleAddModal={this.toggleAddModal} />
+        <Header token={this.state.sessionToken} toggleAddModal={this.toggleAddModal} totalCost={this.state.totalCost} totalValue={this.state.totalValue} />
         <Routes>
           {/* <Route path="/" element={<Main token={this.state.sessionToken} userid={this.state.userid}/>}></Route> */}
           <Route path="/" element={this.mainView()}></Route>

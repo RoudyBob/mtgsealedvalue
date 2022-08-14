@@ -7,7 +7,9 @@ import AddItem from './AddItem';
 
 interface HeaderProps {
     token: string | null,
-    toggleAddModal: Function
+    toggleAddModal: Function,
+    totalCost: number,
+    totalValue: number
 }
  
 interface HeaderState {
@@ -38,6 +40,12 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                             <Nav.Link href="/">Home</Nav.Link>
                             {this.props.token ? <Nav.Link href="/logout">Logout</Nav.Link> : <Nav.Link href="/login">Login</Nav.Link>}
                         </Nav>
+                        <div className="collectionCost">
+                            Collection Cost: {this.props.totalCost.toFixed(2)}
+                        </div>
+                        <div className="collectionValue">
+                            Collection Value: {this.props.totalValue.toFixed(2)}
+                        </div>
                         <Button className="addItemButton" variant="secondary" onClick={() => this.toggleAddModal()}>Add Item to Inventory</Button>
                     </Container>
                 </Navbar>

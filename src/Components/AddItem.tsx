@@ -89,7 +89,8 @@ class AddItem extends React.Component<AddItemProps, AddItemState> {
             purchaseprice: parseFloat(parseFloat(this.state.purchaseprice).toFixed(2)),
             purchasetax: parseFloat(parseFloat(this.state.purchasetax).toFixed(2)),
             purchaseshipping: parseFloat(parseFloat(this.state.purchaseshipping).toFixed(2)),
-            notes: this.state.notes
+            notes: this.state.notes,
+            marketprice: 0
         }
         if (!this.state.purchaseshipping) {
             newItem.purchaseshipping = 0.00;
